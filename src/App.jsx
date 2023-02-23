@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
   const calculateHours = () => {
     const start = new Date(`01/01/2000 ${startTime}`);
     const end = new Date(`01/01/2000 ${endTime}`);
-
+    
     // If end time is before start time, assume it is for the next day
     if (end < start) {
       end.setDate(end.getDate() + 1);
@@ -38,7 +38,9 @@ function App() {
     setTotalHours(0);
     setTotalEarnings(0);
   };
-
+  useEffect(() => {
+    calculateEarnings()
+  },[totalHours])
   const subtractTotalHours = () => {
     const start = new Date(`01/01/2000 ${startTime}`);
     const end = new Date(`01/01/2000 ${endTime}`);
@@ -46,7 +48,7 @@ function App() {
     const newTotalHours = totalHours - hours;
     setTotalHours(newTotalHours < 0 ? 0 : newTotalHours);
   };
-
+ 
   return (
     <div className="App">
       <form onSubmit={handleSubmit} style={{display:"flex",flexDirection: "column"}}>
