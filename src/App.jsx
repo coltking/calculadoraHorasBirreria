@@ -1,85 +1,96 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [horaEntradaActual, setHoraEntradaActual] = useState(0);
-  const [horaSalidaActual, setHoraSalidaActual] = useState(0);
-  const [datosHoras, setDatosHoras] = useState({ entra: [], sale: [] });
-  const [totalHoras, setTotalHoras] = useState(0);
-  const [valorHora, setValorHora] = useState(0)
-  useEffect(() => {
-    setTotalHoras(calcularHoras(datosHoras.entra, datosHoras.sale));
-    console.log(datosHoras);
-  }, [datosHoras]);
-  const HandleChangeValorHora = (e) => {
-    e.preventDefault()
-    setValorHora(parseInt(e.target.value))
-  }
-  const HandleClick = (e) => {
-    e.preventDefault();
-    if (horaEntradaActual != 0 || horaSalidaActual != 0) {
-      setDatosHoras({
-        entra: [...datosHoras.entra, parseInt(horaEntradaActual)],
-        sale: [...datosHoras.sale, parseInt(horaSalidaActual)],
-      });
-      setHoraEntradaActual(0);
-      setHoraSalidaActual(0);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [hourlyRate, setHourlyRate] = useState('');
+  const [discount, setDiscount] = useState('');
+  const [totalHours, setTotalHours] = useState(0);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+
+  const calculateHours = () => {
+    const start = new Date(`01/01/2000 ${startTime}`);
+    const end = new Date(`01/01/2000 ${endTime}`);
+
+    // If end time is before start time, assume it is for the next day
+    if (end < start) {
+      end.setDate(end.getDate() + 1);
     }
-  };
-  const HandleClean = () => {
-    setDatosHoras({ entra: [], sale: [] });
-    setTotalHoras(0);
-  };
-  const calcularHoras = (horariosEntrada, horariosSalida) => {
-    if (horariosEntrada.length === horariosSalida.length) {
-      const reduccion = horariosSalida.reduce((acc, act, index) => {
-        if (act < 10) {
-          return acc + (24 - parseInt(horariosEntrada[index])) + act;
-        } else {
-          return acc + (act - parseInt(horariosEntrada[index]));
-        }
-      }, 0);
-      console.log(reduccion);
-      return reduccion;
-    } else {
-      console.error('entrada y salida tienen diferentes valores');
-    }
+
+    const hours = (end - start) / (1000 * 60 * 60);
+    const newTotalHours = totalHours + hours;
+    setTotalHours(newTotalHours);
   };
 
-  //calcularHoras([18, 18, 18, 18], [19,19,19,1.25])
+  const calculateEarnings = () => {
+    const earnings = totalHours * hourlyRate - discount;
+    setTotalEarnings(earnings);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    calculateHours();
+    calculateEarnings();
+  };
+
+  const resetHoursAndEarnings = () => {
+    setTotalHours(0);
+    setTotalEarnings(0);
+  };
+
+  const subtractTotalHours = () => {
+    const start = new Date(`01/01/2000 ${startTime}`);
+    const end = new Date(`01/01/2000 ${endTime}`);
+    const hours = (end - start) / (1000 * 60 * 60);
+    const newTotalHours = totalHours - hours;
+    setTotalHours(newTotalHours < 0 ? 0 : newTotalHours);
+  };
+
   return (
     <div className="App">
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "self-start" }}>
-        <label>DIAS DE TRABAJO: {datosHoras.entra.length}</label>
-        <label>HORAS TRABAJADAS: {totalHoras}</label>
-        <label>SALDO A COBRAR: {totalHoras * valorHora}</label>
-      </div>
-      <label>Valor hora: $ </label> <input type="number" value={valorHora} onChange={HandleChangeValorHora} />
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "self-start", margin: "10px 0px" }}>
-        <label>Entra:</label>
-        <input
-          type="number"
-          value={horaEntradaActual}
-          onChange={(e) => {
-            e.preventDefault();
-            setHoraEntradaActual(e.target.value);
-          }}
-        />
-      </div>
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "self-start", margin: "10px 0px" }}>
-        <label>Sale:</label>
-        <input
-          type="number"
-          value={horaSalidaActual}
-          onChange={(e) => {
-            e.preventDefault();
-            setHoraSalidaActual(e.target.value);
-          }}
-        />
-      </div>
-      <button onClick={HandleClick}>sumar</button>
+      <form onSubmit={handleSubmit} style={{display:"flex",flexDirection: "column"}}>
+        <label style={{backgroundColor: "lightgreen",border:"1px solid darkgreen"}}>
+          Hora entrada:
+          <input
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+          />
+        </label>
+        <label style={{backgroundColor: "lightBlue",border:"1px solid blue"}}>
+          Hora salida:
+          <input
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+          />
+        </label>
+        <label>
+          Valor por hora: $
+          <input
+            type="number"
+            step="0.01"
+            value={hourlyRate}
+            onChange={(e) => setHourlyRate(e.target.value)}
+          />
+        </label>
+        <label>
+          Descuento(vale/cons):
+          <input
+            type="number"
+            step="0.01"
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
+          />
+        </label>
+        <button type="submit" style={{backgroundColor: "greenyellow",}}>Añadir</button>
+        <button onClick={subtractTotalHours} style={{backgroundColor: "darkred",color: "white"}}>Remover</button>
+      </form>
       <div>
-        <button onClick={HandleClean}>Limpiar Horas</button>
+        <p>Total Horas trabajadas: {totalHours.toFixed(2)}hs</p>
+        <p>Total sueldo: ${totalEarnings.toFixed(2)}</p>
+        <button onClick={resetHoursAndEarnings}>Reiniciar</button>
       </div>
     </div>
   );
