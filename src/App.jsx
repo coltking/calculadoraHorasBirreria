@@ -2,41 +2,41 @@ import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
-  const [entra, setEntra] = useState(0);
-  const [sale, setSale] = useState(0);
-  const [horas, setHoras] = useState({ entra: [], sale: [] });
+  const [horaEntradaActual, setHoraEntradaActual] = useState(0);
+  const [horaSalidaActual, setHoraSalidaActual] = useState(0);
+  const [datosHoras, setDatosHoras] = useState({ entra: [], sale: [] });
   const [totalHoras, setTotalHoras] = useState(0);
-  const [valorHora, setValorHora] =useState(0)
+  const [valorHora, setValorHora] = useState(0)
   useEffect(() => {
-    setTotalHoras(calcularHoras(horas.entra, horas.sale));
-  }, [horas]);
+    setTotalHoras(calcularHoras(datosHoras.entra, datosHoras.sale));
+    console.log(datosHoras);
+  }, [datosHoras]);
   const HandleChangeValorHora = (e) => {
     e.preventDefault()
     setValorHora(parseInt(e.target.value))
   }
   const HandleClick = (e) => {
     e.preventDefault();
-    if (entra != 0 || sale != 0) {
-      setHoras({
-        entra: [...horas.entra, parseInt(entra)],
-        sale: [...horas.sale, parseInt(sale)],
+    if (horaEntradaActual != 0 || horaSalidaActual != 0) {
+      setDatosHoras({
+        entra: [...datosHoras.entra, parseInt(horaEntradaActual)],
+        sale: [...datosHoras.sale, parseInt(horaSalidaActual)],
       });
-      setEntra(0);
-      setSale(0);
-      console.log(entra, sale, horas);
+      setHoraEntradaActual(0);
+      setHoraSalidaActual(0);
     }
   };
   const HandleClean = () => {
-    setHoras({ entra: [], sale: [] });
+    setDatosHoras({ entra: [], sale: [] });
     setTotalHoras(0);
   };
-  const calcularHoras = (hsIn, hsOut) => {
-    if (hsIn.length === hsOut.length) {
-      const reduccion = hsOut.reduce((acc, act, index) => {
+  const calcularHoras = (horariosEntrada, horariosSalida) => {
+    if (horariosEntrada.length === horariosSalida.length) {
+      const reduccion = horariosSalida.reduce((acc, act, index) => {
         if (act < 10) {
-          return acc + (24 - parseInt(hsIn[index])) + act;
+          return acc + (24 - parseInt(horariosEntrada[index])) + act;
         } else {
-          return acc + (act - parseInt(hsIn[index]));
+          return acc + (act - parseInt(horariosEntrada[index]));
         }
       }, 0);
       console.log(reduccion);
@@ -49,31 +49,31 @@ function App() {
   //calcularHoras([18, 18, 18, 18], [19,19,19,1.25])
   return (
     <div className="App">
-      <div style={{display:"flex",flexDirection:"column",alignItems:"self-start"}}>
-        <label>DIAS DE TRABAJO: {horas.entra.length}</label>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "self-start" }}>
+        <label>DIAS DE TRABAJO: {datosHoras.entra.length}</label>
         <label>HORAS TRABAJADAS: {totalHoras}</label>
         <label>SALDO A COBRAR: {totalHoras * valorHora}</label>
       </div>
-        <label>Valor hora: $ </label> <input type="number" value={valorHora} onChange={HandleChangeValorHora}/>
-      <div style={{display:"flex",flexDirection:"row",alignItems:"self-start",margin:"10px 0px"}}>
+      <label>Valor hora: $ </label> <input type="number" value={valorHora} onChange={HandleChangeValorHora} />
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "self-start", margin: "10px 0px" }}>
         <label>Entra:</label>
         <input
           type="number"
-          value={entra}
+          value={horaEntradaActual}
           onChange={(e) => {
             e.preventDefault();
-            setEntra(e.target.value);
+            setHoraEntradaActual(e.target.value);
           }}
         />
       </div>
-      <div style={{display:"flex",flexDirection:"row",alignItems:"self-start",margin:"10px 0px"}}>
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "self-start", margin: "10px 0px" }}>
         <label>Sale:</label>
         <input
           type="number"
-          value={sale}
+          value={horaSalidaActual}
           onChange={(e) => {
             e.preventDefault();
-            setSale(e.target.value);
+            setHoraSalidaActual(e.target.value);
           }}
         />
       </div>
