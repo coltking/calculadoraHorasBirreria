@@ -79,7 +79,7 @@ function App() {
           Descuento(vale/cons):
           <input
             type="number"
-            step="0.01"
+            step="10.00"
             value={discount}
             onChange={(e) => setDiscount(e.target.value)}
           />
