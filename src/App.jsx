@@ -8,10 +8,11 @@ function App() {
   const [discount, setDiscount] = useState('');
   const [totalHours, setTotalHours] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
-
+  const storage = window.localStorage;
   const calculateHours = () => {
     const start = new Date(`01/01/2000 ${startTime}`);
     const end = new Date(`01/01/2000 ${endTime}`);
+    
     
     // If end time is before start time, assume it is for the next day
     if (end < start) {
@@ -20,6 +21,9 @@ function App() {
 
     const hours = (end - start) / (1000 * 60 * 60);
     const newTotalHours = totalHours + hours;
+    storage.setItem("datos", JSON.stringify({
+      totalHours: newTotalHours
+    }))
     setTotalHours(newTotalHours);
   };
 
@@ -38,6 +42,8 @@ function App() {
     setTotalEarnings(0);
   };
   useEffect(() => {
+    let datos = JSON.parse(storage.getItem("datos"));
+    setTotalHours(datos ? datos.totalHours : 0)
     calculateEarnings()
   },[totalHours])
   const subtractTotalHours = (e) => {
@@ -50,6 +56,9 @@ function App() {
     }
     const hours = (end - start) / (1000 * 60 * 60);
     const newTotalHours = totalHours - hours;
+    storage.setItem("datos", JSON.stringify({
+      totalHours: newTotalHours
+    }))
     setTotalHours(newTotalHours < 0 ? 0: newTotalHours);
   };
  
