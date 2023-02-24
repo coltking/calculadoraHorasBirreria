@@ -46,6 +46,11 @@ function App() {
   };
   useEffect(() => {
     let datos = JSON.parse(storage.getItem("datos"));
+    if (!datos?.totalHours) {
+      storage.setItem("datos", JSON.stringify({
+        totalHours: 0,
+      }))
+    }
     setTotalHours(datos.totalHours > 0 ? datos.totalHours : 0)
     calculateEarnings()
   },[totalHours,hourlyRate])
