@@ -30,7 +30,6 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    calculateHours();
     calculateEarnings();
   };
 
@@ -41,12 +40,17 @@ function App() {
   useEffect(() => {
     calculateEarnings()
   },[totalHours])
-  const subtractTotalHours = () => {
+  const subtractTotalHours = (e) => {
+    e.preventDefault()
+
     const start = new Date(`01/01/2000 ${startTime}`);
     const end = new Date(`01/01/2000 ${endTime}`);
+    if (end < start) {
+      end.setDate(end.getDate() + 1);
+    }
     const hours = (end - start) / (1000 * 60 * 60);
     const newTotalHours = totalHours - hours;
-    setTotalHours(newTotalHours < 0 ? 0 : newTotalHours);
+    setTotalHours(newTotalHours < 0 ? 0: newTotalHours);
   };
  
   return (
@@ -86,7 +90,10 @@ function App() {
             onChange={(e) => setDiscount(e.target.value)}
           />
         </label>
-        <button type="submit" style={{backgroundColor: "greenyellow",}}>Añadir</button>
+        <button type="submit" style={{backgroundColor: "greenyellow",}} onClick={(e) => {  
+          e.preventDefault()    
+    calculateHours();
+        }}>Añadir</button>
         <button onClick={subtractTotalHours} style={{backgroundColor: "darkred",color: "white"}}>Remover</button>
       </form>
       <div>
