@@ -38,14 +38,17 @@ function App() {
   };
 
   const resetHoursAndEarnings = () => {
+    storage.setItem("datos", JSON.stringify({
+      totalHours: 0,
+    }))
     setTotalHours(0);
     setTotalEarnings(0);
   };
   useEffect(() => {
     let datos = JSON.parse(storage.getItem("datos"));
-    setTotalHours(datos ? datos.totalHours : 0)
+    setTotalHours(datos.totalHours > 0 ? datos.totalHours : 0)
     calculateEarnings()
-  },[totalHours])
+  },[totalHours,hourlyRate])
   const subtractTotalHours = (e) => {
     e.preventDefault()
 
@@ -57,7 +60,7 @@ function App() {
     const hours = (end - start) / (1000 * 60 * 60);
     const newTotalHours = totalHours - hours;
     storage.setItem("datos", JSON.stringify({
-      totalHours: newTotalHours
+      totalHours: newTotalHours < 0 ? 0 : newTotalHours,
     }))
     setTotalHours(newTotalHours < 0 ? 0: newTotalHours);
   };
