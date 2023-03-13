@@ -30,6 +30,24 @@ function App() {
     setDatosHoras({ entra: [], sale: [] });
     setTotalHoras(0);
   };
+  function convertirHora(numero) {
+    var horas = Math.floor(numero);
+    var minutos = Math.round((numero - horas) * 60);
+    if (minutos === 60) {
+      horas++;
+      minutos = 0;
+    }
+    var horasString = (horas < 10) ? "0" + horas : "" + horas;
+    var minutosString = (minutos < 10) ? "0" + minutos : "" + minutos;
+    return horasString + ":" + minutosString;
+  }
+  function convertirHoraRevez(hora) {
+    var partes = hora.split(":");
+    var horas = parseInt(partes[0]);
+    var minutos = parseInt(partes[1]);
+    var numero = horas + minutos / 60;
+    return parseFloat(numero.toFixed(2));
+  }
   const calcularHoras = (horariosEntrada, horariosSalida) => {
     if (horariosEntrada.length === horariosSalida.length) {
       const reduccion = horariosSalida.reduce((acc, act, index) => {
@@ -58,22 +76,23 @@ function App() {
       <div style={{ display: "flex", flexDirection: "row", alignItems: "self-start", margin: "10px 0px" }}>
         <label>Entra:</label>
         <input
-          type="number"
-          value={horaEntradaActual}
+          type="time"
+          value={convertirHora(horaEntradaActual)}
           onChange={(e) => {
             e.preventDefault();
-            setHoraEntradaActual(e.target.value);
+            setHoraEntradaActual(convertirHoraRevez(e.target.value));
           }}
         />
       </div>
       <div style={{ display: "flex", flexDirection: "row", alignItems: "self-start", margin: "10px 0px" }}>
         <label>Sale:</label>
         <input
-          type="number"
-          value={horaSalidaActual}
+          type="time"
+          value={convertirHora(horaSalidaActual)}
           onChange={(e) => {
             e.preventDefault();
-            setHoraSalidaActual(e.target.value);
+            console.log(convertirHoraRevez(e.target.value));
+            setHoraSalidaActual(convertirHoraRevez(e.target.value));
           }}
         />
       </div>
